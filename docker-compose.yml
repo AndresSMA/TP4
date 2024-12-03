@@ -1,0 +1,29 @@
+version: '3.9'
+services:
+  mqtt-broker:
+    image: eclipse-mosquitto
+    ports:
+      - "1883:1883"
+    volumes:
+      - ./mosquitto.conf:/mosquitto/config/mosquitto.conf
+    networks:
+      - ds-net
+    restart: always
+
+  SERVIDOR:
+    build: ./nodejs-service
+    image: nodejs-service
+    env_file:
+      - conf.env
+    networks:
+      - ds-net
+    ports:
+      - "8888:80"
+    depends_on:
+      - mqtt-broker
+    container_name: SERVIDOR
+    restart: always
+
+networks:
+  ds-net:
+    driver: bridge
